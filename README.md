@@ -1,15 +1,7 @@
 # data-modeling-and-business-intelligence
 Proyecto integral de análisis de datos empresariales que comprende exploración, limpieza, transformación, modelado de datos y desarrollo de dashboards interactivos en Power BI para la generación de indicadores y conocimientos de negocio.
 
-![Modelado de Datos](https://img.shields.io/badge/Modelado_de_Datos-4472C4?style=for-the-badge)
-
-![Power BI](https://img.shields.io/badge/Power_BI-F2C811?style=for-the-badge&logo=powerbi&logoColor=black)
-
-![DAX](https://img.shields.io/badge/DAX-217346?style=for-the-badge)
-
-![ETL](https://img.shields.io/badge/ETL-6A5ACD?style=for-the-badge)
-
-![Análisis de Datos](https://img.shields.io/badge/Análisis_de_Datos-008080?style=for-the-badge)
+![Modelado de Datos](https://img.shields.io/badge/Modelado_de_Datos-4472C4?style=for-the-badge) ![Power BI](https://img.shields.io/badge/Power_BI-F2C811?style=for-the-badge&logo=powerbi&logoColor=black) ![DAX](https://img.shields.io/badge/DAX-217346?style=for-the-badge) ![ETL](https://img.shields.io/badge/ETL-6A5ACD?style=for-the-badge) ![Análisis de Datos](https://img.shields.io/badge/Análisis_de_Datos-008080?style=for-the-badge)
 
 
 
