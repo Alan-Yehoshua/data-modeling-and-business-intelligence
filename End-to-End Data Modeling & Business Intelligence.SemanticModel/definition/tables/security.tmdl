@@ -1,0 +1,37 @@
+table security
+	lineageTag: 891e75cb-75a0-44e4-95d8-4c52e18832b4
+
+	column user_email
+		dataType: string
+		lineageTag: 175e8aec-8bf2-4d0c-b3c5-94833b32069a
+		summarizeBy: none
+		sourceColumn: user_email
+
+		annotation SummarizationSetBy = Automatic
+
+	column region
+		dataType: string
+		lineageTag: 5aba72c9-0bed-42a6-adbf-ffb1f8a79fc4
+		summarizeBy: none
+		sourceColumn: region
+
+		annotation SummarizationSetBy = Automatic
+
+	partition security = m
+		mode: import
+		queryGroup: 01_stage
+		source =
+				let
+				    Origen = Excel.Workbook(File.Contents("C:\Users\Allen\Desktop\project_nightmare_datamodel\dataset.xlsx"), null, true),
+				    security_Sheet = Origen{[Item="security",Kind="Sheet"]}[Data],
+				    #"Tipo cambiado" = Table.TransformColumnTypes(security_Sheet,{{"Column1", type text}, {"Column2", type text}}),
+				    #"Encabezados promovidos" = Table.PromoteHeaders(#"Tipo cambiado", [PromoteAllScalars=true]),
+				    #"Tipo cambiado1" = Table.TransformColumnTypes(#"Encabezados promovidos",{{"UserEmail", type text}, {"Region", type text}}),
+				    #"Columnas con nombre cambiado" = Table.RenameColumns(#"Tipo cambiado1",{{"UserEmail", "user_email"}, {"Region", "region"}})
+				in
+				    #"Columnas con nombre cambiado"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navegación
+

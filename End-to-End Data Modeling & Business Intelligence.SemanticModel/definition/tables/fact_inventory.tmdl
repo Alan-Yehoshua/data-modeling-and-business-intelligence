@@ -1,0 +1,57 @@
+table fact_inventory
+	lineageTag: 935a516c-2469-413d-adff-40d2b0b691db
+
+	column product_key
+		dataType: int64
+		formatString: 0
+		lineageTag: 7f9d88e0-27da-45a1-bf25-8e770618384f
+		summarizeBy: none
+		sourceColumn: product_key
+
+		annotation SummarizationSetBy = Automatic
+
+	column month
+		dataType: dateTime
+		formatString: dd/mm/yyyy
+		lineageTag: dfd13cef-24ee-46e5-9a7d-79d0e1e65d6a
+		summarizeBy: none
+		sourceColumn: month
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	column units
+		dataType: int64
+		formatString: 0
+		lineageTag: edc6ab47-01e3-4245-a915-97e87eafeaea
+		summarizeBy: sum
+		sourceColumn: units
+
+		annotation SummarizationSetBy = Automatic
+
+	partition fact_inventory = m
+		mode: import
+		queryGroup: 03_facts
+		source =
+				let
+				    Origen = inventory,
+				    #"Encabezados promovidos" = Table.PromoteHeaders(Origen, [PromoteAllScalars=true]),
+				    #"Tipo cambiado" = Table.TransformColumnTypes(#"Encabezados promovidos",{{"ProductName", type text}, {"2025-01", Int64.Type}, {"2025-02", Int64.Type}, {"2025-03", Int64.Type}, {"2025-04", Int64.Type}, {"2025-05", Int64.Type}, {"2025-06", Int64.Type}, {"2025-07", Int64.Type}, {"2025-08", Int64.Type}, {"2025-09", Int64.Type}, {"2025-10", Int64.Type}, {"2025-11", Int64.Type}, {"2025-12", Int64.Type}}),
+				    #"Columna de anulación de dinamización" = Table.UnpivotOtherColumns(#"Tipo cambiado", {"ProductName"}, "Atributo", "Valor"),
+				    #"Tipo cambiado1" = Table.TransformColumnTypes(#"Columna de anulación de dinamización",{{"Atributo", type date}}),
+				    #"Columnas con nombre cambiado" = Table.RenameColumns(#"Tipo cambiado1",{{"Atributo", "date"}, {"Valor", "value"}}),
+				    #"Consultas combinadas" = Table.NestedJoin(#"Columnas con nombre cambiado", {"ProductName"}, dim_product, {"product"}, "dim_product", JoinKind.LeftOuter),
+				    #"Se expandió dim_product" = Table.ExpandTableColumn(#"Consultas combinadas", "dim_product", {"product_key"}, {"dim_product.product_key"}),
+				    #"Columnas reordenadas" = Table.ReorderColumns(#"Se expandió dim_product",{"dim_product.product_key", "ProductName", "date", "value"}),
+				    #"Columnas quitadas" = Table.RemoveColumns(#"Columnas reordenadas",{"ProductName"}),
+				    #"Columnas con nombre cambiado1" = Table.RenameColumns(#"Columnas quitadas",{{"dim_product.product_key", "product_key"}, {"date", "month"}, {"value", "units"}})
+				in
+				    #"Columnas con nombre cambiado1"
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Table
+

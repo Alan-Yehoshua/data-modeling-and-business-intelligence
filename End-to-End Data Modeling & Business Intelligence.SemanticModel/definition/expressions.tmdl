@@ -1,0 +1,334 @@
+expression Address =
+		let
+		    Origen = Excel.Workbook(File.Contents("C:\Users\Allen\Desktop\project_nightmare_datamodel\dataset.xlsx"), null, true),
+		    Address_Sheet = Origen{[Item="Address",Kind="Sheet"]}[Data],
+		    #"Encabezados promovidos" = Table.PromoteHeaders(Address_Sheet, [PromoteAllScalars=true]),
+		    #"Tipo cambiado" = Table.TransformColumnTypes(#"Encabezados promovidos",{{"AddressID", Int64.Type}, {"Street", type text}, {"CityName", type text}})
+		in
+		    #"Tipo cambiado"
+	lineageTag: 15934752-a375-4ff8-a255-2fff1fd56637
+	queryGroup: 01_stage
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Table
+
+expression cities =
+		let
+		    Origen = Excel.Workbook(File.Contents("C:\Users\Allen\Desktop\project_nightmare_datamodel\dataset.xlsx"), null, true),
+		    cities_Sheet = Origen{[Item="cities",Kind="Sheet"]}[Data],
+		    #"Tipo cambiado" = Table.TransformColumnTypes(cities_Sheet,{{"Column1", type text}, {"Column2", type text}}),
+		    #"Encabezados promovidos" = Table.PromoteHeaders(#"Tipo cambiado", [PromoteAllScalars=true]),
+		    #"Tipo cambiado1" = Table.TransformColumnTypes(#"Encabezados promovidos",{{"CityName", type text}, {"RegionName", type text}})
+		in
+		    #"Tipo cambiado1"
+	lineageTag: 63bd95d5-980d-4ed1-a928-5fd5453f733b
+	queryGroup: 01_stage
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Table
+
+expression CUST_MASTER =
+		let
+		    Origen = Excel.Workbook(File.Contents("C:\Users\Allen\Desktop\project_nightmare_datamodel\dataset.xlsx"), null, true),
+		    CUST_MASTER_Sheet = Origen{[Item="CUST_MASTER",Kind="Sheet"]}[Data],
+		    #"Encabezados promovidos" = Table.PromoteHeaders(CUST_MASTER_Sheet, [PromoteAllScalars=true]),
+		    #"Tipo cambiado" = Table.TransformColumnTypes(#"Encabezados promovidos",{{"CustomerID", Int64.Type}, {"CustomerName", type text}, {"Segment", type text}, {"AddressID", Int64.Type}, {"AccountManager", type text}, {"PaymentTerms", type text}, {"hash_key", type text}, {"source_id", type text}})
+		in
+		    #"Tipo cambiado"
+	lineageTag: ae61ef7f-52b8-442d-b99e-8a7ed9fab748
+	queryGroup: 01_stage
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Table
+
+expression customer_contacts =
+		let
+		    Origen = Excel.Workbook(File.Contents("C:\Users\Allen\Desktop\project_nightmare_datamodel\dataset.xlsx"), null, true),
+		    customer_contacts_Sheet = Origen{[Item="customer_contacts",Kind="Sheet"]}[Data],
+		    #"Encabezados promovidos" = Table.PromoteHeaders(customer_contacts_Sheet, [PromoteAllScalars=true]),
+		    #"Tipo cambiado" = Table.TransformColumnTypes(#"Encabezados promovidos",{{"CustomerID", Int64.Type}, {"ContactName", type text}, {"Email", type text}, {"IsPrimary", type logical}}),
+		    #"Filas filtradas" = Table.SelectRows(#"Tipo cambiado", each ([IsPrimary] = true))
+		in
+		    #"Filas filtradas"
+	lineageTag: cf3814e0-cc3b-4c8b-b4fb-b30770927112
+	queryGroup: 01_stage
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Table
+
+expression regions =
+		let
+		    Origen = Excel.Workbook(File.Contents("C:\Users\Allen\Desktop\project_nightmare_datamodel\dataset.xlsx"), null, true),
+		    regions_Sheet = Origen{[Item="regions",Kind="Sheet"]}[Data],
+		    #"Tipo cambiado" = Table.TransformColumnTypes(regions_Sheet,{{"Column1", type text}})
+		in
+		    #"Tipo cambiado"
+	lineageTag: f69d54bf-9103-4657-89f5-a2a9fedbcdcd
+	queryGroup: 01_stage
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Table
+
+expression user_details =
+		let
+		    Origen = Excel.Workbook(File.Contents("C:\Users\Allen\Desktop\project_nightmare_datamodel\dataset.xlsx"), null, true),
+		    user_details_Sheet = Origen{[Item="user_details",Kind="Sheet"]}[Data],
+		    #"Encabezados promovidos" = Table.PromoteHeaders(user_details_Sheet, [PromoteAllScalars=true]),
+		    #"Tipo cambiado" = Table.TransformColumnTypes(#"Encabezados promovidos",{{"UserID", Int64.Type}, {"CreditLimit", Int64.Type}, {"Phone", type text}})
+		in
+		    #"Tipo cambiado"
+	lineageTag: c4646557-3773-46bf-8d4e-771c4445b4a2
+	queryGroup: 01_stage
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Table
+
+expression products =
+		let
+		    Origen = Excel.Workbook(File.Contents("C:\Users\Allen\Desktop\project_nightmare_datamodel\dataset.xlsx"), null, true),
+		    products_Sheet = Origen{[Item="products",Kind="Sheet"]}[Data],
+		    #"Encabezados promovidos" = Table.PromoteHeaders(products_Sheet, [PromoteAllScalars=true]),
+		    #"Tipo cambiado" = Table.TransformColumnTypes(#"Encabezados promovidos",{{"ProductCode", type text}, {"ProductName", type text}, {"Brand", type text}, {"SubcategoryName", type text}, {"UnitPrice", type number}, {"PrimarySupplier", type text}, {"ProductDescription", type text}, {"hash_key", type text}, {"source_id", type text}})
+		in
+		    #"Tipo cambiado"
+	lineageTag: 02b316fd-bc23-4124-a189-5b47bf96f634
+	queryGroup: 01_stage
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Table
+
+expression subcategories =
+		let
+		    Origen = Excel.Workbook(File.Contents("C:\Users\Allen\Desktop\project_nightmare_datamodel\dataset.xlsx"), null, true),
+		    subcategories_Sheet = Origen{[Item="subcategories",Kind="Sheet"]}[Data],
+		    #"Tipo cambiado" = Table.TransformColumnTypes(subcategories_Sheet,{{"Column1", type text}}),
+		    #"Valor reemplazado" = Table.ReplaceValue(#"Tipo cambiado","CategorySubcategory","Category|Subcategory",Replacer.ReplaceText,{"Column1"}),
+		    #"Dividir columna por delimitador" = Table.SplitColumn(#"Valor reemplazado", "Column1", Splitter.SplitTextByDelimiter("|", QuoteStyle.Csv), {"Column1.1", "Column1.2"}),
+		    #"Tipo cambiado1" = Table.TransformColumnTypes(#"Dividir columna por delimitador",{{"Column1.1", type text}, {"Column1.2", type text}}),
+		    #"Encabezados promovidos" = Table.PromoteHeaders(#"Tipo cambiado1", [PromoteAllScalars=true]),
+		    #"Tipo cambiado2" = Table.TransformColumnTypes(#"Encabezados promovidos",{{"Category", type text}, {"Subcategory", type text}}),
+		    #"Poner En Mayúsculas Cada Palabra" = Table.TransformColumns(#"Tipo cambiado2",{{"Subcategory", Text.Proper, type text}, {"Category", Text.Proper, type text}})
+		in
+		    #"Poner En Mayúsculas Cada Palabra"
+	lineageTag: 04b6f601-7371-4dc1-8274-3ae88253da74
+	queryGroup: 01_stage
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Table
+
+expression ORDERS_2025 =
+		let
+		    Origen = Excel.Workbook(File.Contents("C:\Users\Allen\Desktop\project_nightmare_datamodel\dataset.xlsx"), null, true),
+		    ORDERS_2025_Sheet = Origen{[Item="ORDERS_2025",Kind="Sheet"]}[Data],
+		    #"Encabezados promovidos" = Table.PromoteHeaders(ORDERS_2025_Sheet, [PromoteAllScalars=true]),
+		    #"Tipo cambiado" = Table.TransformColumnTypes(#"Encabezados promovidos",{{"OrderID", type text}, {"LegacyRef", type text}, {"CustomerName", type text}, {"CustomerCity", type text}, {"RegionName", type text}, {"ShipToCity", type text}, {"BillToCity", type text}, {"OrderDate", type datetime}, {"OrderChannel", Int64.Type}, {"Status", type text}, {"Priority", type text}, {"OrderTotal", type number}, {"OrderNotes", type text}, {"GiftMessage", type any}, {"SourceFile", type text}})
+		in
+		    #"Tipo cambiado"
+	lineageTag: 45a69f2f-864d-418e-93e9-4af5b495f6ad
+	queryGroup: 01_stage
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Table
+
+expression ORDERS_2026 =
+		let
+		    Origen = Excel.Workbook(File.Contents("C:\Users\Allen\Desktop\project_nightmare_datamodel\dataset.xlsx"), null, true),
+		    ORDERS_2026_Sheet = Origen{[Item="ORDERS_2026",Kind="Sheet"]}[Data],
+		    #"Encabezados promovidos" = Table.PromoteHeaders(ORDERS_2026_Sheet, [PromoteAllScalars=true]),
+		    #"Tipo cambiado" = Table.TransformColumnTypes(#"Encabezados promovidos",{{"OrderID", type text}, {"CustomerName", type text}, {"CustomerCity", type text}, {"RegionName", type text}, {"ShipToCity", type text}, {"BillToCity", type text}, {"OrderDate", type datetime}, {"OrderChannel", Int64.Type}, {"Status", type text}, {"Priority", type text}, {"OrderTotal", type number}, {"OrderNotes", type text}, {"GiftMessage", type any}})
+		in
+		    #"Tipo cambiado"
+	lineageTag: 7727eb5c-2d44-46b9-870b-bf07ec440f98
+	queryGroup: 01_stage
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Table
+
+expression order_line_items =
+		let
+		    Origen = Excel.Workbook(File.Contents("C:\Users\Allen\Desktop\project_nightmare_datamodel\dataset.xlsx"), null, true),
+		    order_line_items_Sheet = Origen{[Item="order_line_items",Kind="Sheet"]}[Data],
+		    #"Encabezados promovidos" = Table.PromoteHeaders(order_line_items_Sheet, [PromoteAllScalars=true]),
+		    #"Tipo cambiado" = Table.TransformColumnTypes(#"Encabezados promovidos",{{"LineID", type text}, {"OrderID", type text}, {"ProductName", type text}, {"Quantity", Int64.Type}, {"UnitPrice", type number}, {"UnitCost", type number}, {"DiscountPct", type number}, {"LineTotal", type number}})
+		in
+		    #"Tipo cambiado"
+	lineageTag: 2564e6eb-a2ba-4e98-a424-53171dd2995f
+	queryGroup: 01_stage
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Table
+
+expression channels =
+		let
+		    Origen = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("i45WMjRQ0lHyz8vJzEtVitWJVjIC8YNSSxIzcxQCEotK8lKLwOLGIPHwjPyc1OLEHIhSE5CQW2ZqTkowWCgWAA==", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [channel_code = _t, channel_name = _t]),
+		    #"Tipo cambiado" = Table.TransformColumnTypes(Origen,{{"channel_code", Int64.Type}, {"channel_name", type text}})
+		in
+		    #"Tipo cambiado"
+	lineageTag: 97d0ec34-a131-4872-9f21-e1b61630f7a9
+	queryGroup: 01_stage
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Table
+
+expression orders =
+		let
+		    Origen = Table.Combine({ORDERS_2025, ORDERS_2026}),
+		    #"Columnas quitadas" = Table.RemoveColumns(Origen,{"LegacyRef", "OrderNotes", "GiftMessage", "SourceFile"}),
+		    #"Filas ordenadas" = Table.Sort(#"Columnas quitadas",{{"OrderID", Order.Ascending}})
+		in
+		    #"Filas ordenadas"
+	lineageTag: 226ca54f-958b-4ee5-a292-52a09907ea35
+	queryGroup: 01_stage
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Table
+
+expression inventory =
+		let
+		    Origen = Excel.Workbook(File.Contents("C:\Users\Allen\Desktop\project_nightmare_datamodel\dataset.xlsx"), null, true),
+		    inventory_Sheet = Origen{[Item="inventory",Kind="Sheet"]}[Data],
+		    #"Tipo cambiado" = Table.TransformColumnTypes(inventory_Sheet,{{"Column1", type text}, {"Column2", type any}, {"Column3", type any}, {"Column4", type any}, {"Column5", type any}, {"Column6", type any}, {"Column7", type any}, {"Column8", type any}, {"Column9", type any}, {"Column10", type any}, {"Column11", type any}, {"Column12", type any}, {"Column13", type any}})
+		in
+		    #"Tipo cambiado"
+	lineageTag: 947dd46c-4285-4b8d-b03a-a18e82241408
+	queryGroup: 01_stage
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Table
+
+expression CAMPAIGN_LOG =
+		let
+		    Origen = Excel.Workbook(File.Contents("C:\Users\Allen\Desktop\project_nightmare_datamodel\dataset.xlsx"), null, true),
+		    CAMPAIGN_LOG_Sheet = Origen{[Item="CAMPAIGN_LOG",Kind="Sheet"]}[Data],
+		    #"Encabezados promovidos" = Table.PromoteHeaders(CAMPAIGN_LOG_Sheet, [PromoteAllScalars=true]),
+		    #"Tipo cambiado" = Table.TransformColumnTypes(#"Encabezados promovidos",{{"CampaignName", type text}, {"Channel", type text}, {"StartDate", type date}, {"EndDate", type date}, {"Budget", Int64.Type}, {"Date", type date}, {"Impressions", Int64.Type}, {"Clicks", Int64.Type}, {"Spend", type number}})
+		in
+		    #"Tipo cambiado"
+	lineageTag: f1ea3207-9bae-45d9-86fa-59d667f4d087
+	queryGroup: 01_stage
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Table
+
+expression campaign_skus =
+		let
+		    Origen = Excel.Workbook(File.Contents("C:\Users\Allen\Desktop\project_nightmare_datamodel\dataset.xlsx"), null, true),
+		    campaign_skus_Sheet = Origen{[Item="campaign_skus",Kind="Sheet"]}[Data],
+		    #"Tipo cambiado" = Table.TransformColumnTypes(campaign_skus_Sheet,{{"Column1", type text}, {"Column2", type text}})
+		in
+		    #"Tipo cambiado"
+	lineageTag: c0482533-10aa-488b-8059-0f6b48f9cbf3
+	queryGroup: 01_stage
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Table
+
+expression invoice_lines =
+		let
+		    Origen = Excel.Workbook(File.Contents("C:\Users\Allen\Desktop\project_nightmare_datamodel\dataset.xlsx"), null, true),
+		    invoice_lines_Sheet = Origen{[Item="invoice_lines",Kind="Sheet"]}[Data],
+		    #"Encabezados promovidos" = Table.PromoteHeaders(invoice_lines_Sheet, [PromoteAllScalars=true]),
+		    #"Tipo cambiado" = Table.TransformColumnTypes(#"Encabezados promovidos",{{"InvoiceLineID", type text}, {"InvoiceID", type text}, {"ProductName", type text}, {"Amount", type number}}),
+		    #"Filas filtradas" = Table.SelectRows(#"Tipo cambiado", each true)
+		in
+		    #"Filas filtradas"
+	lineageTag: cb74b37d-44a5-4cfb-8fd6-107ef8faa9af
+	queryGroup: 01_stage
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Table
+
+expression INVOICES =
+		let
+		    Origen = Excel.Workbook(File.Contents("C:\Users\Allen\Desktop\project_nightmare_datamodel\dataset.xlsx"), null, true),
+		    INVOICES_Sheet = Origen{[Item="INVOICES",Kind="Sheet"]}[Data],
+		    #"Encabezados promovidos" = Table.PromoteHeaders(INVOICES_Sheet, [PromoteAllScalars=true]),
+		    #"Tipo cambiado" = Table.TransformColumnTypes(#"Encabezados promovidos",{{"InvoiceID", type text}, {"OrderID", type text}, {"CustomerName", type text}, {"InvoiceDate", type date}, {"Amount", type number}}),
+		    #"Filas filtradas" = Table.SelectRows(#"Tipo cambiado", each true)
+		in
+		    #"Filas filtradas"
+	lineageTag: 9e9edd86-be97-4fce-93e9-7a5021cb5c4c
+	queryGroup: 01_stage
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Table
+
+expression payments =
+		let
+		    Origen = Excel.Workbook(File.Contents("C:\Users\Allen\Desktop\project_nightmare_datamodel\dataset.xlsx"), null, true),
+		    payments_Sheet = Origen{[Item="payments",Kind="Sheet"]}[Data],
+		    #"Encabezados promovidos" = Table.PromoteHeaders(payments_Sheet, [PromoteAllScalars=true]),
+		    #"Tipo cambiado" = Table.TransformColumnTypes(#"Encabezados promovidos",{{"PaymentID", type text}, {"InvoiceID", type text}, {"CustomerName", type text}, {"PayDate", type date}, {"Amount", type number}}),
+		    #"Filas filtradas" = Table.SelectRows(#"Tipo cambiado", each true)
+		in
+		    #"Filas filtradas"
+	lineageTag: 6c0c3f94-4579-4313-94c3-a5ece0c0bb8b
+	queryGroup: 01_stage
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Table
+
+expression shipments =
+		let
+		    Origen = Excel.Workbook(File.Contents("C:\Users\Allen\Desktop\project_nightmare_datamodel\dataset.xlsx"), null, true),
+		    shipments_Sheet = Origen{[Item="shipments",Kind="Sheet"]}[Data],
+		    #"Encabezados promovidos" = Table.PromoteHeaders(shipments_Sheet, [PromoteAllScalars=true]),
+		    #"Tipo cambiado" = Table.TransformColumnTypes(#"Encabezados promovidos",{{"ShipmentID", type text}, {"OrderID", type text}, {"ShipMode", type text}, {"ShipDate", type date}, {"DeliveryDate", type date}})
+		in
+		    #"Tipo cambiado"
+	lineageTag: e0959786-b733-41a1-a78e-280c6cc84b0c
+	queryGroup: 01_stage
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Table
+
+expression exchange_rates =
+		let
+		    Origen = Excel.Workbook(File.Contents("C:\Users\Allen\Desktop\project_nightmare_datamodel\dataset.xlsx"), null, true),
+		    exchange_rates_Sheet = Origen{[Item="exchange_rates",Kind="Sheet"]}[Data],
+		    #"Encabezados promovidos" = Table.PromoteHeaders(exchange_rates_Sheet, [PromoteAllScalars=true]),
+		    #"Tipo cambiado" = Table.TransformColumnTypes(#"Encabezados promovidos",{{"Currency", type text}, {"Rate", type number}, {"Date", type date}})
+		in
+		    #"Tipo cambiado"
+	lineageTag: b5a75b46-7e46-4ccd-ac8c-3acd57d2604b
+	queryGroup: 01_stage
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Table
+
+expression sales_targets =
+		let
+		    Origen = Excel.Workbook(File.Contents("C:\Users\Allen\Desktop\project_nightmare_datamodel\dataset.xlsx"), null, true),
+		    sales_targets_Sheet = Origen{[Item="sales_targets",Kind="Sheet"]}[Data],
+		    #"Encabezados promovidos" = Table.PromoteHeaders(sales_targets_Sheet, [PromoteAllScalars=true]),
+		    #"Tipo cambiado" = Table.TransformColumnTypes(#"Encabezados promovidos",{{"Period", type date}, {"TargetRevenue", Int64.Type}})
+		in
+		    #"Tipo cambiado"
+	lineageTag: b875e0ce-59db-4f74-8037-5b8a4828831d
+	queryGroup: 01_stage
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Table
+

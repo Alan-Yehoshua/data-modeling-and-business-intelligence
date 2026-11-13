@@ -1,0 +1,67 @@
+table _measures
+	lineageTag: 58f798d6-ed38-4519-b305-e9f8e0ff6618
+
+	measure total_sales = SUM(fact_sales[line_total])
+		formatString: 0
+		lineageTag: 9471d08a-7cd5-4edc-91fe-0ae2c6b7bd87
+
+	measure total_orders = DISTINCTCOUNT(fact_sales[order_id])
+		formatString: 0
+		lineageTag: ef89a577-0a0b-4888-aca7-9c0fede4b192
+
+	measure total_customer_active = DISTINCTCOUNT(fact_sales[customer_id])
+		formatString: 0
+		lineageTag: aaa70122-b4a5-41c2-9764-0073807a12a3
+
+	measure base_total_customer = COUNT(dim_customer[customer_id])
+		formatString: 0
+		lineageTag: 6b13caa3-0cfc-4ecc-a8eb-58896c4b2c94
+
+	measure avg_order_to_pay = AVERAGE(fact_order_process[order_to_pay])
+		formatString: 0
+		lineageTag: 57f21175-2e79-4191-96af-f4214bde0fbc
+
+	measure avg_income = AVERAGE(fact_sales[line_total])
+		lineageTag: c8ca81f4-f7c5-46ab-b5dd-cc8490adfcd0
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure ranking =
+			
+			RANKX(
+			    ALL(dim_customer[customer_name]),
+			    CALCULATE([total_sales]),
+			    ,
+			    DESC,
+			    DENSE
+			)
+		formatString: 0
+		lineageTag: 8e514f1a-81cb-4c32-8ec4-077d95ed7b52
+
+	measure total_sales_agr = CALCULATE([total_sales],TOPN([ranking],ALL(dim_customer[customer_name]),[total_sales]))
+		lineageTag: 4aa6505d-66c1-479c-b8c3-75c19e1bbc7a
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure total_sales_agr_% = [total_sales_agr]/CALCULATE([total_sales], ALL(dim_customer[customer_name]))
+		formatString: 0.00\ %;-0.00\ %;0.00\ %
+		lineageTag: 555d16cd-dcd1-4064-9a0c-e5da5204d671
+
+	column Column
+		isHidden
+		formatString: 0
+		lineageTag: b8be2b6c-17c0-4b2c-829f-9e7dd824d2d6
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [Column]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition _measures = calculated
+		mode: import
+		source = Row("Column", BLANK())
+
+	annotation PBI_Id = a2683e2925514fc6b2cca90fed6ef6f9
+
+	annotation 436ba87b-9c83-4389-a31b-ebd06a36be98 = {"Expression":""}
+

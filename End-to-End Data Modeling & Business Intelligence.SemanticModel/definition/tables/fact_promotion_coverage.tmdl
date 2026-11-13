@@ -1,0 +1,45 @@
+table fact_promotion_coverage
+	lineageTag: 2ba6850c-b6be-4377-8270-7cce6dbc4907
+
+	column campaign_key
+		dataType: int64
+		formatString: 0
+		lineageTag: b55cd7bb-9033-4e98-b8b9-efb62abd8928
+		summarizeBy: none
+		sourceColumn: campaign_key
+
+		annotation SummarizationSetBy = Automatic
+
+	column product_key
+		dataType: int64
+		formatString: 0
+		lineageTag: 1f780ee7-2094-4926-9993-eec55e179ede
+		summarizeBy: none
+		sourceColumn: product_key
+
+		annotation SummarizationSetBy = Automatic
+
+	partition fact_promotion_coverage = m
+		mode: import
+		queryGroup: 03_facts
+		source =
+				let
+				    Origen = campaign_skus,
+				    #"Encabezados promovidos" = Table.PromoteHeaders(Origen, [PromoteAllScalars=true]),
+				    #"Tipo cambiado" = Table.TransformColumnTypes(#"Encabezados promovidos",{{"CampaignName", type text}, {"PromotedSKUs", type text}}),
+				    #"Dividir columna por delimitador" = Table.ExpandListColumn(Table.TransformColumns(#"Tipo cambiado", {{"PromotedSKUs", Splitter.SplitTextByDelimiter(",", QuoteStyle.Csv), let itemType = (type nullable text) meta [Serialized.Text = true] in type {itemType}}}), "PromotedSKUs"),
+				    #"Tipo cambiado1" = Table.TransformColumnTypes(#"Dividir columna por delimitador",{{"PromotedSKUs", type text}}),
+				    #"Texto recortado" = Table.TransformColumns(#"Tipo cambiado1",{{"PromotedSKUs", Text.Trim, type text}}),
+				    #"Consultas combinadas" = Table.NestedJoin(#"Texto recortado", {"CampaignName"}, dim_campaign, {"campaign_name"}, "dim_campaign", JoinKind.LeftOuter),
+				    #"Se expandió dim_campaign" = Table.ExpandTableColumn(#"Consultas combinadas", "dim_campaign", {"campaign_key"}, {"dim_campaign.campaign_key"}),
+				    #"Consultas combinadas1" = Table.NestedJoin(#"Se expandió dim_campaign", {"PromotedSKUs"}, dim_product, {"product_code"}, "dim_product", JoinKind.LeftOuter),
+				    #"Se expandió dim_product" = Table.ExpandTableColumn(#"Consultas combinadas1", "dim_product", {"product_key"}, {"dim_product.product_key"}),
+				    #"Columnas quitadas" = Table.RemoveColumns(#"Se expandió dim_product",{"CampaignName", "PromotedSKUs"}),
+				    #"Columnas con nombre cambiado" = Table.RenameColumns(#"Columnas quitadas",{{"dim_campaign.campaign_key", "campaign_key"}, {"dim_product.product_key", "product_key"}})
+				in
+				    #"Columnas con nombre cambiado"
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Table
+

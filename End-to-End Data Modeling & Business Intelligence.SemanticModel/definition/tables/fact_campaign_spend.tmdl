@@ -1,0 +1,72 @@
+table fact_campaign_spend
+	lineageTag: f37cb482-e864-4c42-9260-d0d4feda27c8
+
+	column campaign_key
+		dataType: int64
+		formatString: 0
+		lineageTag: a01cdaf5-81e4-43c9-9baf-ac925295e17e
+		summarizeBy: none
+		sourceColumn: campaign_key
+
+		annotation SummarizationSetBy = Automatic
+
+	column date
+		dataType: dateTime
+		formatString: dd/mm/yyyy
+		lineageTag: 860bc92e-be5b-48d0-8496-cde9673550f9
+		summarizeBy: none
+		sourceColumn: date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	column impressions
+		dataType: int64
+		formatString: 0
+		lineageTag: 2488135c-7573-41dc-8e76-649966764099
+		summarizeBy: sum
+		sourceColumn: impressions
+
+		annotation SummarizationSetBy = Automatic
+
+	column clicks
+		dataType: int64
+		formatString: 0
+		lineageTag: e9ef344e-1bfc-4c80-8cdc-8dddee18ebbc
+		summarizeBy: sum
+		sourceColumn: clicks
+
+		annotation SummarizationSetBy = Automatic
+
+	column spend
+		dataType: double
+		lineageTag: 5cbb9228-4427-4afe-ad06-a26f96557dab
+		summarizeBy: sum
+		sourceColumn: spend
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition fact_campaign_spend = m
+		mode: import
+		queryGroup: 03_facts
+		source =
+				let
+				    Origen = CAMPAIGN_LOG,
+				    #"Columnas quitadas" = Table.RemoveColumns(Origen,{"Channel", "StartDate", "EndDate", "Budget"}),
+				    #"Consultas combinadas" = Table.NestedJoin(#"Columnas quitadas", {"CampaignName"}, dim_campaign, {"campaign_name"}, "dim_campaign", JoinKind.LeftOuter),
+				    #"Se expandió dim_campaign" = Table.ExpandTableColumn(#"Consultas combinadas", "dim_campaign", {"campaign_key"}, {"dim_campaign.campaign_key"}),
+				    #"Columnas reordenadas" = Table.ReorderColumns(#"Se expandió dim_campaign",{"dim_campaign.campaign_key", "CampaignName", "Date", "Impressions", "Clicks", "Spend"}),
+				    #"Columnas quitadas1" = Table.RemoveColumns(#"Columnas reordenadas",{"CampaignName"}),
+				    #"Columnas con nombre cambiado" = Table.RenameColumns(#"Columnas quitadas1",{{"dim_campaign.campaign_key", "campaign_key"}, {"Date", "date"}, {"Impressions", "impressions"}, {"Clicks", "clicks"}, {"Spend", "spend"}})
+				in
+				    #"Columnas con nombre cambiado"
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Table
+

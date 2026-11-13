@@ -1,0 +1,139 @@
+table fact_order_process
+	lineageTag: 0f81169f-be52-4955-983b-6a8f979fbf15
+
+	column order_id
+		dataType: string
+		lineageTag: 68fdf084-e451-491b-8d38-528bdaeb498d
+		summarizeBy: none
+		sourceColumn: order_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column cusotmer_id
+		dataType: string
+		lineageTag: 4d9e987a-09b9-4972-87f3-b639f71ababa
+		summarizeBy: none
+		sourceColumn: cusotmer_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column order_date
+		dataType: dateTime
+		formatString: dd/mm/yyyy
+		lineageTag: 22379a2f-fec4-45dc-bf92-96784b260b01
+		summarizeBy: none
+		sourceColumn: order_date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column ship_date
+		dataType: dateTime
+		formatString: dd/mm/yyyy
+		lineageTag: 43a61dbf-e11a-463b-8e82-3f72c1ffff8b
+		summarizeBy: none
+		sourceColumn: ship_date
+
+		variation Variation
+			isDefault
+			relationship: c6195441-c2b8-4411-8047-43e58a3f1cc6
+			defaultHierarchy: LocalDateTable_94760b39-3abc-4113-9c9e-8a2f5445a46b.'Jerarquía de fechas'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	column delevery_date
+		dataType: dateTime
+		formatString: dd/mm/yyyy
+		lineageTag: 6401f889-5dfe-45c9-8b29-641e4b115d7c
+		summarizeBy: none
+		sourceColumn: delevery_date
+
+		variation Variation
+			isDefault
+			relationship: 52a3f9c4-5f3d-44f2-9752-bed807861177
+			defaultHierarchy: LocalDateTable_4605c05c-6281-41f1-8873-33e25aca907c.'Jerarquía de fechas'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	column pay_date
+		dataType: dateTime
+		formatString: dd/mm/yyyy
+		lineageTag: f4487a8b-563e-40c1-9e74-e19bd46e0c5c
+		summarizeBy: none
+		sourceColumn: pay_date
+
+		variation Variation
+			isDefault
+			relationship: 3f8c2e07-0942-4371-9ad6-46c6328cce46
+			defaultHierarchy: LocalDateTable_20453c9e-3d64-4853-b04b-2e8d687de42f.'Jerarquía de fechas'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	column invoice_date
+		dataType: dateTime
+		formatString: dd/mm/yyyy
+		lineageTag: 8309c1fb-02d0-41a1-8316-016095ecafda
+		summarizeBy: none
+		sourceColumn: invoice_date
+
+		variation Variation
+			isDefault
+			relationship: 04bd7455-38a4-4b50-91e7-649929fe17cd
+			defaultHierarchy: LocalDateTable_de636106-7ad9-4acb-9f7e-f59f7b0e1d07.'Jerarquía de fechas'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	column order_to_pay = DATEDIFF(fact_order_process[order_date],fact_order_process[pay_date], DAY)
+		formatString: 0
+		lineageTag: 3b0b4e08-b8af-4002-89c0-86fdaf2a6453
+		summarizeBy: sum
+
+		annotation SummarizationSetBy = Automatic
+
+	partition fact_order_process = m
+		mode: import
+		queryGroup: 03_facts
+		source =
+				let
+				    Origen = orders,
+				    #"Columnas quitadas" = Table.RemoveColumns(Origen,{"CustomerCity", "RegionName", "ShipToCity", "BillToCity", "OrderChannel", "Status", "Priority", "OrderTotal"}),
+				    #"Consultas combinadas" = Table.NestedJoin(#"Columnas quitadas", {"CustomerName"}, dim_customer, {"customer_name"}, "dim_customer", JoinKind.LeftOuter),
+				    #"Se expandió dim_customer" = Table.ExpandTableColumn(#"Consultas combinadas", "dim_customer", {"cusotmer_id"}, {"dim_customer.cusotmer_id"}),
+				    #"Columnas reordenadas" = Table.ReorderColumns(#"Se expandió dim_customer",{"OrderID", "dim_customer.cusotmer_id", "CustomerName", "OrderDate"}),
+				    #"Columnas quitadas1" = Table.RemoveColumns(#"Columnas reordenadas",{"CustomerName"}),
+				    #"Consultas combinadas1" = Table.NestedJoin(#"Columnas quitadas1", {"OrderID"}, shipments, {"OrderID"}, "shipments", JoinKind.LeftOuter),
+				    #"Se expandió shipments" = Table.ExpandTableColumn(#"Consultas combinadas1", "shipments", {"ShipDate", "DeliveryDate"}, {"shipments.ShipDate", "shipments.DeliveryDate"}),
+				    #"Consultas combinadas2" = Table.NestedJoin(#"Se expandió shipments", {"OrderID"}, INVOICES, {"OrderID"}, "INVOICES", JoinKind.LeftOuter),
+				    #"Se expandió INVOICES" = Table.ExpandTableColumn(#"Consultas combinadas2", "INVOICES", {"InvoiceID", "InvoiceDate"}, {"INVOICES.InvoiceID", "INVOICES.InvoiceDate"}),
+				    #"Consultas combinadas3" = Table.NestedJoin(#"Se expandió INVOICES", {"INVOICES.InvoiceID"}, payments, {"InvoiceID"}, "payments", JoinKind.LeftOuter),
+				    #"Se expandió payments" = Table.ExpandTableColumn(#"Consultas combinadas3", "payments", {"PayDate"}, {"payments.PayDate"}),
+				    #"Columnas reordenadas1" = Table.ReorderColumns(#"Se expandió payments",{"OrderID", "dim_customer.cusotmer_id", "OrderDate", "shipments.ShipDate", "shipments.DeliveryDate", "payments.PayDate", "INVOICES.InvoiceDate", "INVOICES.InvoiceID"}),
+				    #"Columnas quitadas2" = Table.RemoveColumns(#"Columnas reordenadas1",{"INVOICES.InvoiceID"}),
+				    #"Columnas con nombre cambiado" = Table.RenameColumns(#"Columnas quitadas2",{{"dim_customer.cusotmer_id", "cusotmer_id"}, {"shipments.ShipDate", "ship_date"}, {"shipments.DeliveryDate", "delevery_date"}, {"payments.PayDate", "pay_date"}, {"INVOICES.InvoiceDate", "invoice_date"}, {"OrderDate", "order_date"}, {"OrderID", "order_id"}}),
+				    #"Fecha extraída" = Table.TransformColumns(#"Columnas con nombre cambiado",{{"order_date", DateTime.Date, type date}})
+				in
+				    #"Fecha extraída"
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Table
+

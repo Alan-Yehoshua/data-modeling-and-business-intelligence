@@ -1,0 +1,13 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.1.0/schema.json",
+  "name": "d08e583d46ea56497fcc",
+  "displayName": "Clientes",
+  "displayOption": "FitToPage",
+  "height": 1080,
+  "width": 1920,
+  "pageBinding": {
+    "name": "73b5216eb7db2248a8ed",
+    "type": "Default",
+    "parameters": []
+  }
+}

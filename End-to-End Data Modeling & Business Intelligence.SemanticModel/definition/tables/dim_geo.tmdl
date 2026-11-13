@@ -1,0 +1,44 @@
+table dim_geo
+	lineageTag: 197a3670-23c7-4bd3-be4d-a382c3c99a55
+
+	column geo_key
+		dataType: int64
+		formatString: 0
+		lineageTag: 5646afb3-2dc4-4f2d-9b34-ae8643f40874
+		summarizeBy: none
+		sourceColumn: geo_key
+
+		annotation SummarizationSetBy = Automatic
+
+	column city
+		dataType: string
+		lineageTag: 6527720b-19ec-433f-813c-334ca7dbd8fd
+		summarizeBy: none
+		sourceColumn: city
+
+		annotation SummarizationSetBy = Automatic
+
+	column region
+		dataType: string
+		lineageTag: 56f78044-f983-4577-9f0f-fe6dddbd75c5
+		summarizeBy: none
+		sourceColumn: region
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dim_geo = m
+		mode: import
+		queryGroup: 02_dimension
+		source =
+				let
+				    Origen = cities,
+				    #"Índice agregado" = Table.AddIndexColumn(Origen, "Índice", 1, 1, Int64.Type),
+				    #"Columnas reordenadas" = Table.ReorderColumns(#"Índice agregado",{"Índice", "CityName", "RegionName"}),
+				    #"Columnas con nombre cambiado" = Table.RenameColumns(#"Columnas reordenadas",{{"Índice", "geo_key"}, {"CityName", "city"}, {"RegionName", "region"}})
+				in
+				    #"Columnas con nombre cambiado"
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Table
+

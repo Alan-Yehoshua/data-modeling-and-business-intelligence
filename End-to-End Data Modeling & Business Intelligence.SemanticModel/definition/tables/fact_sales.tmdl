@@ -1,0 +1,173 @@
+table fact_sales
+	lineageTag: 5db0b0b6-aba6-4838-ac0b-3ce14ceec7b1
+
+	column line_id
+		dataType: string
+		lineageTag: fa3d9347-9c05-451a-b919-5cd1a5e89880
+		summarizeBy: none
+		sourceColumn: line_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column order_id
+		dataType: string
+		lineageTag: 2c77191e-5f45-48ef-958a-0903967564ba
+		summarizeBy: none
+		sourceColumn: order_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column quantity
+		dataType: int64
+		formatString: 0
+		lineageTag: 589c90ed-1969-476b-b134-5a828241799a
+		summarizeBy: sum
+		sourceColumn: quantity
+
+		annotation SummarizationSetBy = Automatic
+
+	column price
+		dataType: double
+		lineageTag: 356a5152-5325-492d-a359-cf091369837c
+		summarizeBy: sum
+		sourceColumn: price
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column cost
+		dataType: double
+		lineageTag: eca69f9f-7117-491a-8052-82bd73e83a1f
+		summarizeBy: sum
+		sourceColumn: cost
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column discount
+		dataType: double
+		lineageTag: 9e452ec6-5ec9-4fa8-aed5-1c4458142d64
+		summarizeBy: sum
+		sourceColumn: discount
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column line_total
+		dataType: double
+		formatString: 0.00
+		lineageTag: 5e0f86fd-a8da-41f9-95eb-8f8136aa1a1a
+		summarizeBy: sum
+		sourceColumn: line_total
+
+		annotation SummarizationSetBy = Automatic
+
+	column order_date
+		dataType: dateTime
+		formatString: dd/mm/yyyy
+		lineageTag: 446f7f37-5514-4947-ac17-99633f741ef0
+		summarizeBy: none
+		sourceColumn: order_date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column product_key
+		dataType: int64
+		formatString: 0
+		lineageTag: d2cda38e-d84e-4f99-91cb-f95e516c60bb
+		summarizeBy: none
+		sourceColumn: product_key
+
+		annotation SummarizationSetBy = Automatic
+
+	column flag_key
+		dataType: int64
+		formatString: 0
+		lineageTag: 7719b1aa-a3ac-4a3c-8fb0-d3a8faa61c2a
+		summarizeBy: none
+		sourceColumn: flag_key
+
+		annotation SummarizationSetBy = Automatic
+
+	column ship_city_key
+		dataType: int64
+		formatString: 0
+		lineageTag: d1dd3671-8ef7-44dd-94e1-12e0e7d603ec
+		summarizeBy: none
+		sourceColumn: ship_city_key
+
+		annotation SummarizationSetBy = Automatic
+
+	column bill_city_key
+		dataType: int64
+		formatString: 0
+		lineageTag: d87882dc-bd93-4376-bbab-af2bf15c6757
+		summarizeBy: sum
+		sourceColumn: bill_city_key
+
+		annotation SummarizationSetBy = Automatic
+
+	column customer_id
+		dataType: int64
+		formatString: 0
+		lineageTag: adcd21af-a4d7-449f-b09f-ca9eae319276
+		summarizeBy: none
+		sourceColumn: customer_id
+
+		annotation SummarizationSetBy = Automatic
+
+	partition fact_sales = m
+		mode: import
+		queryGroup: 03_facts
+		source =
+				let
+				    Origen = order_line_items,
+				    #"Consultas combinadas" = Table.NestedJoin(Origen, {"OrderID"}, orders, {"OrderID"}, "orders", JoinKind.LeftOuter),
+				    #"Se expandió orders" = Table.ExpandTableColumn(#"Consultas combinadas", "orders", {"CustomerName", "CustomerCity", "RegionName", "ShipToCity", "BillToCity", "OrderDate", "OrderChannel", "Status", "Priority", "OrderTotal"}, {"orders.CustomerName", "orders.CustomerCity", "orders.RegionName", "orders.ShipToCity", "orders.BillToCity", "orders.OrderDate", "orders.OrderChannel", "orders.Status", "orders.Priority", "orders.OrderTotal"}),
+				    #"Consultas combinadas1" = Table.NestedJoin(#"Se expandió orders", {"orders.CustomerName"}, dim_customer, {"customer_name"}, "dim_customer", JoinKind.LeftOuter),
+				    #"Se expandió dim_customer" = Table.ExpandTableColumn(#"Consultas combinadas1", "dim_customer", {"cusotmer_id"}, {"dim_customer.cusotmer_id"}),
+				    #"Columnas reordenadas" = Table.ReorderColumns(#"Se expandió dim_customer",{"LineID", "OrderID", "ProductName", "dim_customer.cusotmer_id", "Quantity", "UnitPrice", "UnitCost", "DiscountPct", "LineTotal", "orders.CustomerName", "orders.CustomerCity", "orders.RegionName", "orders.ShipToCity", "orders.BillToCity", "orders.OrderDate", "orders.OrderChannel", "orders.Status", "orders.Priority", "orders.OrderTotal"}),
+				    #"Consultas combinadas2" = Table.NestedJoin(#"Columnas reordenadas", {"ProductName"}, dim_product, {"product"}, "dim_product", JoinKind.LeftOuter),
+				    #"Se expandió dim_product" = Table.ExpandTableColumn(#"Consultas combinadas2", "dim_product", {"product_key"}, {"dim_product.product_key"}),
+				    #"Columnas reordenadas1" = Table.ReorderColumns(#"Se expandió dim_product",{"LineID", "OrderID", "ProductName", "dim_product.product_key", "dim_customer.cusotmer_id", "Quantity", "UnitPrice", "UnitCost", "DiscountPct", "LineTotal", "orders.CustomerName", "orders.CustomerCity", "orders.RegionName", "orders.ShipToCity", "orders.BillToCity", "orders.OrderDate", "orders.OrderChannel", "orders.Status", "orders.Priority", "orders.OrderTotal"}),
+				    #"Consultas combinadas3" = Table.NestedJoin(#"Columnas reordenadas1", {"orders.OrderChannel", "orders.Status", "orders.Priority"}, din_order_flags, {"channel_code", "status", "priority"}, "din_order_flags", JoinKind.LeftOuter),
+				    #"Se expandió din_order_flags1" = Table.ExpandTableColumn(#"Consultas combinadas3", "din_order_flags", {"flag_key"}, {"din_order_flags.flag_key"}),
+				    #"Columnas reordenadas2" = Table.ReorderColumns(#"Se expandió din_order_flags1",{"LineID", "OrderID", "ProductName", "dim_product.product_key", "dim_customer.cusotmer_id", "din_order_flags.flag_key", "Quantity", "UnitPrice", "UnitCost", "DiscountPct", "LineTotal", "orders.CustomerName", "orders.CustomerCity", "orders.RegionName", "orders.ShipToCity", "orders.BillToCity", "orders.OrderDate", "orders.OrderChannel", "orders.Status", "orders.Priority", "orders.OrderTotal"}),
+				    #"Columnas quitadas" = Table.RemoveColumns(#"Columnas reordenadas2",{"ProductName", "orders.CustomerName", "orders.CustomerCity", "orders.RegionName", "orders.OrderChannel", "orders.Status", "orders.Priority", "orders.OrderTotal"}),
+				    #"Columnas reordenadas3" = Table.ReorderColumns(#"Columnas quitadas",{"LineID", "OrderID", "dim_product.product_key", "dim_customer.cusotmer_id", "din_order_flags.flag_key", "orders.OrderDate", "orders.BillToCity", "orders.ShipToCity", "Quantity", "UnitPrice", "UnitCost", "DiscountPct", "LineTotal"}),
+				    #"Columnas con nombre cambiado" = Table.RenameColumns(#"Columnas reordenadas3",{{"LineID", "line_id"}, {"OrderID", "order_id"}, {"dim_product.product_key", "product_key"}, {"dim_customer.cusotmer_id", "cusotmer_id"}, {"din_order_flags.flag_key", "flag_key"}, {"orders.OrderDate", "order_date"}, {"orders.BillToCity", "bill_city"}, {"orders.ShipToCity", "ship_city"}, {"Quantity", "quantity"}, {"UnitPrice", "unit_rpice"}, {"UnitCost", "unit_cost"}, {"DiscountPct", "discount_price"}, {"LineTotal", "line_total"}}),
+				    #"Consultas combinadas4" = Table.NestedJoin(#"Columnas con nombre cambiado", {"bill_city"}, dim_geo, {"city"}, "dim_geo", JoinKind.LeftOuter),
+				    #"Se expandió dim_geo" = Table.ExpandTableColumn(#"Consultas combinadas4", "dim_geo", {"geo_key"}, {"dim_geo.geo_key"}),
+				    #"Columnas con nombre cambiado1" = Table.RenameColumns(#"Se expandió dim_geo",{{"dim_geo.geo_key", "bill_city_key"}}),
+				    #"Columnas reordenadas4" = Table.ReorderColumns(#"Columnas con nombre cambiado1",{"line_id", "order_id", "product_key", "cusotmer_id", "flag_key", "order_date", "bill_city_key", "bill_city", "ship_city", "quantity", "unit_rpice", "unit_cost", "discount_price", "line_total"}),
+				    #"Consultas combinadas5" = Table.NestedJoin(#"Columnas reordenadas4", {"ship_city"}, dim_geo, {"city"}, "dim_geo", JoinKind.LeftOuter),
+				    #"Se expandió dim_geo1" = Table.ExpandTableColumn(#"Consultas combinadas5", "dim_geo", {"geo_key"}, {"dim_geo.geo_key"}),
+				    #"Columnas reordenadas5" = Table.ReorderColumns(#"Se expandió dim_geo1",{"line_id", "order_id", "product_key", "cusotmer_id", "flag_key", "order_date", "bill_city_key", "bill_city", "dim_geo.geo_key", "ship_city", "quantity", "unit_rpice", "unit_cost", "discount_price", "line_total"}),
+				    #"Columnas con nombre cambiado2" = Table.RenameColumns(#"Columnas reordenadas5",{{"dim_geo.geo_key", "ship_city_key"}}),
+				    #"Columnas quitadas1" = Table.RemoveColumns(#"Columnas con nombre cambiado2",{"ship_city", "bill_city"}),
+				    #"Columnas reordenadas6" = Table.ReorderColumns(#"Columnas quitadas1",{"line_id", "order_id", "product_key", "cusotmer_id", "flag_key", "ship_city_key", "bill_city_key", "order_date", "quantity", "unit_rpice", "unit_cost", "discount_price", "line_total"}),
+				    #"Columnas con nombre cambiado3" = Table.RenameColumns(#"Columnas reordenadas6",{{"unit_cost", "cost"}, {"unit_rpice", "price"}, {"discount_price", "discount"}}),
+				    #"Fecha extraída" = Table.TransformColumns(#"Columnas con nombre cambiado3",{{"order_date", DateTime.Date, type date}}),
+				    #"Columnas con nombre cambiado4" = Table.RenameColumns(#"Fecha extraída",{{"cusotmer_id", "customer_id"}}),
+				    #"Columnas quitadas2" = Table.RemoveColumns(#"Columnas con nombre cambiado4",{"customer_id"}),
+				    #"Consultas combinadas6" = Table.NestedJoin(#"Columnas quitadas2", {"order_id"}, orders, {"OrderID"}, "orders", JoinKind.LeftOuter),
+				    #"Se expandió orders1" = Table.ExpandTableColumn(#"Consultas combinadas6", "orders", {"CustomerName"}, {"orders.CustomerName"}),
+				    #"Consultas combinadas7" = Table.NestedJoin(#"Se expandió orders1", {"orders.CustomerName"}, dim_customer, {"customer_name"}, "dim_customer", JoinKind.LeftOuter),
+				    #"Columnas quitadas3" = Table.RemoveColumns(#"Consultas combinadas7",{"orders.CustomerName"}),
+				    #"Se expandió dim_customer1" = Table.ExpandTableColumn(#"Columnas quitadas3", "dim_customer", {"customer_id"}, {"dim_customer.customer_id"}),
+				    #"Columnas reordenadas7" = Table.ReorderColumns(#"Se expandió dim_customer1",{"line_id", "order_id", "dim_customer.customer_id", "product_key", "flag_key", "ship_city_key", "bill_city_key", "order_date", "quantity", "price", "cost", "discount", "line_total"}),
+				    #"Columnas con nombre cambiado5" = Table.RenameColumns(#"Columnas reordenadas7",{{"dim_customer.customer_id", "customer_id"}})
+				in
+				    #"Columnas con nombre cambiado5"
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Table
+

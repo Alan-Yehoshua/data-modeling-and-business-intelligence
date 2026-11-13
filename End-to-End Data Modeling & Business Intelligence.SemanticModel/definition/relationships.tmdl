@@ -1,0 +1,104 @@
+relationship AutoDetected_74e90c2b-e32d-40c0-8afe-7dcfe111306b
+	fromColumn: fact_sales.product_key
+	toColumn: dim_product.product_key
+
+relationship AutoDetected_31559a7c-4272-45f0-a67f-e35625659aad
+	fromColumn: fact_sales.flag_key
+	toColumn: din_order_flags.flag_key
+
+relationship 79162d8a-091b-7162-e103-c4399d99656d
+	fromColumn: fact_sales.ship_city_key
+	toColumn: dim_geo.geo_key
+
+relationship b34f1161-e123-c0a1-4235-3f8fe077b9da
+	isActive: false
+	fromColumn: fact_sales.bill_city_key
+	toColumn: dim_geo.geo_key
+
+relationship AutoDetected_53601e2a-da5e-4099-b118-9ab434063651
+	fromColumn: fact_inventory.product_key
+	toColumn: dim_product.product_key
+
+relationship 75966a6a-291f-4732-9c2b-a5ac39053025
+	joinOnDateBehavior: datePartOnly
+	fromColumn: dim_campaign.start_date
+	toColumn: LocalDateTable_72888fee-30fb-43ee-8319-b437d55cacdb.Date
+
+relationship fb5c9d8a-f7fd-43ab-9af1-15e706414f18
+	joinOnDateBehavior: datePartOnly
+	fromColumn: dim_campaign.end_Date
+	toColumn: LocalDateTable_5188421f-4cf3-4b8d-9558-bf25d7d587f1.Date
+
+relationship AutoDetected_d11e107f-1c7b-46d1-9cbf-3f7dcab873aa
+	fromColumn: fact_promotion_coverage.product_key
+	toColumn: dim_product.product_key
+
+relationship AutoDetected_010355b1-05f1-452a-a9e7-2c36842fbccf
+	fromColumn: fact_campaign_spend.campaign_key
+	toColumn: dim_campaign.campaign_key
+
+relationship AutoDetected_462c1c19-183e-44c1-8601-0bd340d0e323
+	fromColumn: fact_promotion_coverage.campaign_key
+	toColumn: dim_campaign.campaign_key
+
+relationship c6195441-c2b8-4411-8047-43e58a3f1cc6
+	joinOnDateBehavior: datePartOnly
+	fromColumn: fact_order_process.ship_date
+	toColumn: LocalDateTable_94760b39-3abc-4113-9c9e-8a2f5445a46b.Date
+
+relationship 52a3f9c4-5f3d-44f2-9752-bed807861177
+	joinOnDateBehavior: datePartOnly
+	fromColumn: fact_order_process.delevery_date
+	toColumn: LocalDateTable_4605c05c-6281-41f1-8873-33e25aca907c.Date
+
+relationship 3f8c2e07-0942-4371-9ad6-46c6328cce46
+	joinOnDateBehavior: datePartOnly
+	fromColumn: fact_order_process.pay_date
+	toColumn: LocalDateTable_20453c9e-3d64-4853-b04b-2e8d687de42f.Date
+
+relationship 04bd7455-38a4-4b50-91e7-649929fe17cd
+	joinOnDateBehavior: datePartOnly
+	fromColumn: fact_order_process.invoice_date
+	toColumn: LocalDateTable_de636106-7ad9-4acb-9f7e-f59f7b0e1d07.Date
+
+relationship AutoDetected_0452ced6-022f-4bd2-b298-d7bf131b77c5
+	fromColumn: fact_order_process.cusotmer_id
+	toColumn: dim_customer.customer_id
+
+relationship d25e31e1-45c9-4b5f-8aee-94e8d2f475a0
+	joinOnDateBehavior: datePartOnly
+	fromColumn: dim_date.date
+	toColumn: LocalDateTable_924782b0-ba69-4664-9e2e-16fff4eff355.Date
+
+relationship 8693c74c-335f-3d0f-aee2-5441b7e689b7
+	crossFilteringBehavior: bothDirections
+	fromCardinality: one
+	fromColumn: fact_campaign_spend.date
+	toColumn: dim_date.date
+
+relationship fb4346ab-c2c2-a224-cbea-f02637639bac
+	crossFilteringBehavior: bothDirections
+	fromCardinality: one
+	fromColumn: fact_sales_targets.date
+	toColumn: dim_date.date
+
+relationship 38f9d4f5-c53e-ce4d-871d-3a321f662c43
+	fromColumn: fact_inventory.month
+	toColumn: dim_date.date
+
+relationship b22aa66a-3f92-6714-0288-5a1cc0cb9702
+	fromColumn: fact_order_process.order_date
+	toColumn: dim_date.date
+
+relationship e0646606-df03-7fa1-d499-31c964ec73ab
+	fromColumn: dim_customer.region
+	toColumn: security.region
+
+relationship 73767b4d-bd42-dd00-e0a6-908a1a4807ba
+	fromColumn: fact_sales.order_date
+	toColumn: dim_date.date
+
+relationship AutoDetected_b7891aca-53a7-4a43-bf8b-04d3774c0ab0
+	fromColumn: fact_sales.customer_id
+	toColumn: dim_customer.customer_id
+
